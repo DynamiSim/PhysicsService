@@ -1,0 +1,12 @@
+{
+    "name": "PhysicsServiceDevContainer",
+    "dockerFile": "Dockerfile",
+    "extensions": ["ms-vscode.cpptools", "ms-vscode.cpptools-extension-pack"],
+    "settings": {
+      "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "forwardPorts": [1234],
+    "shutdownAction": "stopCompose",
+    "remoteUser": "vscode"
+  }
+  
