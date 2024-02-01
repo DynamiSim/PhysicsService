@@ -3,8 +3,11 @@ FROM mcr.microsoft.com/devcontainers/base:1.0-bullseye
 
 # Install required dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends lsb-release curl \
+    && apt-get -y install --no-install-recommends lsb-release curl cmake libwebsocketpp-dev libasio-dev libjsoncpp-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Fix json.h path
+RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
 # Copy repository to the container
 COPY . /workspaces
@@ -22,3 +25,5 @@ ENV PKG_CONFIG_PATH=/opt/openrobots/lib/pkgconfig:$PKG_CONFIG_PATH
 ENV LD_LIBRARY_PATH=/opt/openrobots/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/opt/openrobots/lib/python3.10/site-packages:$PYTHONPATH
 ENV CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
+
+EXPOSE 1234
