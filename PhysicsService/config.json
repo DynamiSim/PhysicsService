@@ -1,0 +1,6 @@
+{
+    "urdf_filename": "panda/robot.urdf",
+    "damping_factor": -0.4,
+    "dt": 0.005
+}
+  

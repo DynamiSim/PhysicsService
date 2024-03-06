@@ -11,6 +11,9 @@
 #include <asio/io_service.hpp>
 #include <chrono>
 #include <csignal>
+#include <fstream>
+#include <json/json.h>
+#include <sstream>
 
 // PINOCCHIO_MODEL_DIR is defined by the CMake but you can define your own directory here.
 #ifndef PINOCCHIO_MODEL_DIR
@@ -20,15 +23,19 @@
 // The port number the WebSocket server listens on
 #define PORT_NUMBER 1234
 
+enum SimulationState { STOPPED, RUNNING, RESET };
+
 // Create the event loop for the main thread, and the WebSocket server
 asio::io_service mainEventLoop;
 WebsocketServer server;
+SimulationState simState = STOPPED;
 
 using namespace pinocchio;
 
 int main(int argc, char* argv[])
-{
-	
+{	
+	#pragma region WebSocket callbacks
+
 	// Register our network callbacks, ensuring the logic is run on the main thread's event loop
 	server.connect([&mainEventLoop, &server](ClientConnection conn)
 	{
@@ -53,27 +60,61 @@ int main(int argc, char* argv[])
 	{
 		mainEventLoop.post([conn, args, &server]()
 		{
-			//std::clog << "message handler on the main thread" << std::endl;
-			//std::clog << "Message payload:" << std::endl;
+			std::clog << "Message payload:" << std::endl;
 			for (auto key : args.getMemberNames()) {
-				//std::clog << "\t" << key << ": " << args[key].asString() << std::endl;
+				std::clog << "\t" << key << ": " << args[key].asString() << std::endl;
 			}
 			
 			// Echo the message pack to the client
 			server.sendMessage(conn, "message", args);
 		});
 	});
+
+	// Message handler for starting the simulation
+	server.message("start", [&mainEventLoop, &server, &simState](ClientConnection conn, const Json::Value& args)
+	{
+		mainEventLoop.post([&server, &simState]()
+		{
+			// Start the simulation if it's not already running
+			if (simState != RUNNING)
+			{
+				simState = RUNNING;
+				std::cout << "Simulation started." << std::endl;
+			}
+		});
+	});
+
+	// Message handler for stopping the simulation
+	server.message("stop", [&mainEventLoop, &server, &simState](ClientConnection conn, const Json::Value& args)
+	{
+		mainEventLoop.post([&server, &simState]()
+		{
+			// Stop the simulation if it's running
+			if (simState != STOPPED)
+			{
+				simState = STOPPED;
+				std::cout << "Simulation stopped." << std::endl;
+			}
+		});
+	});
+
+	// Message handler for resetting the simulation
+	server.message("reset", [&mainEventLoop, &server, &simState](ClientConnection conn, const Json::Value& args)
+	{
+		mainEventLoop.post([&server, &simState]()
+		{
+			// Reset the simulation to initial state
+			simState = RESET;
+			std::cout << "Simulation reset." << std::endl;
+		});
+	});
+
+	#pragma endregion
 	
 	// Start the networking thread
 	std::thread serverThread([&server]() {
         std::cout << "Server is running on: " << asio::ip::host_name() << std::endl;
 		server.run(PORT_NUMBER);
-	});
-	
-	// Start an input thread that listens to the frontend (might want to use rest api instead for this?)
-	std::thread inputThread([&server, &mainEventLoop]()
-	{
-		
 	});
 	
 	// Start the event loop for the main thread
@@ -87,44 +128,69 @@ int main(int argc, char* argv[])
 	);
 	std::cout << "Main event loop started" << std::endl;
 
-	// Set up simulation
-	// TODO: add config file
-    const std::string urdf_filename = PINOCCHIO_MODEL_DIR + std::string("/panda/robot.urdf");
-        
-    // Load the urdf model
-    Model model;
-    pinocchio::urdf::buildModel(urdf_filename,model);
+	// Set up simulation //
+
+	// Read config file
+    Json::Value config;
+    std::ifstream configFile("../config.json");
+    if (!configFile.is_open()) {
+        std::cerr << "Failed to open config file." << std::endl;
+        return -1;
+    }
+    configFile >> config;
+
+	// Extract damping factor, dt, and URDF filename
+    double damping_factor = config["damping_factor"].asDouble();
+	std::cout << "Damping factor: " << damping_factor << std::endl;
+    double dt = config["dt"].asDouble();
+	std::cout << "dt: " << dt << std::endl;
+    std::string urdfFilename = config["urdf_filename"].asString();
+	std::cout << "urdf: " << urdfFilename << std::endl;
+    std::string urdfFilePath = std::string(PINOCCHIO_MODEL_DIR) + "/" + urdfFilename;
+
+	// Initialize simulation state
+	simState = STOPPED;
+	Model model;
+    pinocchio::urdf::buildModel(urdfFilePath,model);
     std::cout << "model name: " << model.name << std::endl;
     
     // Create data required by the algorithms
     Data data(model);
 
-	// Define extra model variables
-	double damping_factor = -0.1;
-	double dt = 0.005;
-
-    // Set initial robot data
+	Eigen::VectorXd tau = Eigen::VectorXd::Zero(model.nv);
     Eigen::VectorXd q = Eigen::VectorXd::Zero(model.nv);
     Eigen::VectorXd v = Eigen::VectorXd::Zero(model.nv);
     Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv);
-    Eigen::VectorXd tau = Eigen::VectorXd::Zero(model.nv);
            
     auto startTime = std::chrono::high_resolution_clock::now();
 
 	// Main simulation loop
-	// TODO: add start/stop/reset/disconnect features and criteria (frotend too)
 	while (1)
 	{	
-        // Generate joint positions
-		tau = damping_factor * v;
-        a = pinocchio::aba(model, data, q, v, tau);
-		
+		switch (simState) {
+			case STOPPED:
+				break;
+			case RESET:
+				tau = Eigen::VectorXd::Zero(model.nv);
+				q = Eigen::VectorXd::Zero(model.nv);
+				v = Eigen::VectorXd::Zero(model.nv);
+				a = Eigen::VectorXd::Zero(model.nv);
+				simState = STOPPED;
+				break;
+			case RUNNING:
+				tau = damping_factor * v;
+				a = pinocchio::aba(model, data, q, v, tau);
+				v += a * dt;
+				q = pinocchio::integrate(model, q, v*dt);
+				break;
+			default:
+				std::cout << "Simulation state invalid." << std::endl;
+				return -1;
+		}
+
 		// Measure iteration time
         auto endTime = std::chrono::high_resolution_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-		
-		v += a * dt;
-		q = pinocchio::integrate(model, q, v*dt);
 
 		// Calculate remaining time to sleep
         auto remaining_time = static_cast<int>(dt * 1000000) - elapsed;
@@ -132,7 +198,7 @@ int main(int argc, char* argv[])
         {
             std::this_thread::sleep_for(std::chrono::microseconds(remaining_time));
         }
-        std::clog<< "q: " << q.transpose() << "\tdt: " << dt <<std::endl;
+        //std::clog<< "q: " << q.transpose() << "\tdt: " << dt <<std::endl;
 
         startTime = std::chrono::high_resolution_clock::now();
 
@@ -142,7 +208,7 @@ int main(int argc, char* argv[])
 		// Convert Eigen::VectorXd to Json::Value array
         Json::Value positionsArray(Json::arrayValue);
         for (int i = 0; i < q.size(); ++i) {
-             positionsArray.append(q[i]); // TODO: maybe degrees to radians?
+             positionsArray.append(q[i]);
         }
 
         payload["positions"] = positionsArray;

@@ -43,7 +43,7 @@
         <parent link="panda_link0"/>
         <child link="panda_link1"/>
         <axis xyz="0 0 1"/>
-        <limit effort="87.0" lower="-2.8973" upper="2.8973" velocity="2.175"/>
+        <limit effort="87.0" lower="-20.8973" upper="20.8973" velocity="2.175"/>
         <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
         <dynamics D="1" K="7000" damping="0.003" friction="0.0" mu_coulomb="0" mu_viscous="16"/>
     </joint>
@@ -69,7 +69,7 @@
         <parent link="panda_link1"/>
         <child link="panda_link2"/>
         <axis xyz="0 0 1"/>
-        <limit effort="87.0" lower="-1.7628" upper="1.7628" velocity="2.175"/>
+        <limit effort="87.0" lower="-10.7628" upper="10.7628" velocity="2.175"/>
         <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
         <dynamics D="1" K="7000" damping="0.003" friction="0.0" mu_coulomb="0" mu_viscous="16"/>
     </joint>
@@ -173,7 +173,7 @@
         <parent link="panda_link5"/>
         <child link="panda_link6"/>
         <axis xyz="0 0 1"/>
-        <limit effort="12.0" lower="-0.0175" upper="3.7525" velocity="2.61"/>
+        <limit effort="12.0" lower="-10.0175" upper="3.7525" velocity="2.61"/>
         <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-0.0175" soft_upper_limit="3.7525"/>
         <dynamics D="1" K="7000" damping="0.003" friction="0.0" mu_coulomb="0" mu_viscous="16"/>
     </joint>
