@@ -14,6 +14,8 @@
 #include <fstream>
 #include <json/json.h>
 #include <sstream>
+#include <zmq.hpp>
+#include "build/protos/motion_control.pb.h"
 
 // PINOCCHIO_MODEL_DIR is defined by the CMake but you can define your own directory here.
 #ifndef PINOCCHIO_MODEL_DIR
@@ -29,6 +31,11 @@ enum SimulationState { STOPPED, RUNNING, RESET };
 asio::io_service mainEventLoop;
 WebsocketServer server;
 SimulationState simState = STOPPED;
+
+Eigen::VectorXd tau;
+Eigen::VectorXd q;
+Eigen::VectorXd v;
+Eigen::VectorXd a;
 
 using namespace pinocchio;
 
@@ -111,11 +118,20 @@ int main(int argc, char* argv[])
 
 	#pragma endregion
 	
-	// Start the networking thread
+	// Start the Websocket thread
 	std::thread serverThread([&server]() {
         std::cout << "Server is running on: " << asio::ip::host_name() << std::endl;
 		server.run(PORT_NUMBER);
 	});
+
+	// ZeroMQ server setup //
+	
+	// Create a ZeroMQ context
+    zmq::context_t context(1);
+    // Create a socket to listen for incoming connections
+    zmq::socket_t socket(context, ZMQ_REP);
+    // Bind the socket to a specific port
+    socket.bind("tcp://*:5555"); // Adjust the port number as needed
 	
 	// Start the event loop for the main thread
 	asio::io_service::work work(mainEventLoop);
@@ -157,16 +173,87 @@ int main(int argc, char* argv[])
     // Create data required by the algorithms
     Data data(model);
 
-	Eigen::VectorXd tau = Eigen::VectorXd::Zero(model.nv);
-    Eigen::VectorXd q = Eigen::VectorXd::Zero(model.nv);
-    Eigen::VectorXd v = Eigen::VectorXd::Zero(model.nv);
-    Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv);
+	tau = Eigen::VectorXd::Zero(model.nv);
+    q = Eigen::VectorXd::Zero(model.nv);
+    v = Eigen::VectorXd::Zero(model.nv);
+    a = Eigen::VectorXd::Zero(model.nv);
            
     auto startTime = std::chrono::high_resolution_clock::now();
 
 	// Main simulation loop
 	while (1)
 	{	
+		// Receive a control message
+        zmq::message_t message;
+		try
+		{
+			socket.recv(&message);
+		}
+		catch(const std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+			continue;
+		}
+
+        // Parse the received message
+        motion_control::Request request;
+        request.ParseFromArray(message.data(), message.size());
+
+        // Handle the received message
+        auto handleRequest = [&](const motion_control::Request& request) {
+            // Define the handling logic for different message types here
+            switch (request.type()) {
+                case motion_control::Request::SET_JOINT_POSITION:
+                    // Handle SET_JOINT_POSITION message type
+                    break;
+                case motion_control::Request::SET_JOINT_VELOCITY:
+                    // Handle SET_JOINT_VELOCITY message type
+                    break;
+				case motion_control::Request::SET_JOINT_TORQUE:
+                    // Handle SET_JOINT_TORQUE message type
+					if(request.has_set_joint_torque()){
+						auto input_size = request.set_joint_torque().torque_size();
+						tau = Eigen::VectorXd(input_size);
+						// Populate the Eigen::VectorXd with torque values
+						for (int i = 0; i < input_size; ++i) {
+							tau(i) = (double)request.set_joint_torque().torque(i);
+						}
+					}
+					 
+                    break;
+                // Add cases for other message types as needed
+                default:
+                    // Handle unknown message type
+                    break;
+            }
+        };
+
+        // Call the handleMessage lambda function with the received message
+        handleRequest(request);
+
+		// Prepare a response message
+		// TODO: Delete
+		std::string response = "Dummy response";
+		zmq::message_t reply(response.size());
+		memcpy(reply.data(), response.data(), response.size());
+		socket.send(reply);
+		// ENDTODO
+
+        // Prepare a response message
+        // Example: create an acknowledgment message
+    	//motion_control::Acknowledge acknowledge;
+        //acknowledge.set_acknowledge("Message received successfully");
+
+        // Serialize the response message
+        //std::string response = "Ok";
+        //acknowledge.SerializeToString(&response);
+
+        // Send the response
+        //zmq::message_t reply(response.size());
+        //memcpy(reply.data(), response.data(), response.size());
+        //socket.send(reply);
+		
+
 		switch (simState) {
 			case STOPPED:
 				break;
@@ -178,7 +265,7 @@ int main(int argc, char* argv[])
 				simState = STOPPED;
 				break;
 			case RUNNING:
-				tau = damping_factor * v;
+				tau += damping_factor * v;
 				a = pinocchio::aba(model, data, q, v, tau);
 				v += a * dt;
 				q = pinocchio::integrate(model, q, v*dt);

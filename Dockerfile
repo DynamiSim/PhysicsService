@@ -3,8 +3,14 @@ FROM mcr.microsoft.com/devcontainers/base:1.0-bullseye
 
 # Install required dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends lsb-release curl cmake libwebsocketpp-dev libasio-dev libjsoncpp-dev \
+    && apt-get -y install --no-install-recommends lsb-release curl cmake \
+        libwebsocketpp-dev libasio-dev libjsoncpp-dev libprotobuf-dev \ 
+        protobuf-compiler libzmq5-dev \
+        python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install additional Python packages for testing
+RUN pip3 install websocket-client protobuf==3.20.* zmq
 
 # Fix json.h path
 RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json

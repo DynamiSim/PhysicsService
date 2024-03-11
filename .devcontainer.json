@@ -1,7 +1,7 @@
 {
     "name": "PhysicsServiceDevContainer",
     "dockerFile": "Dockerfile",
-    "extensions": ["ms-vscode.cpptools", "ms-vscode.cpptools-extension-pack"],
+    "extensions": ["ms-vscode.cpptools", "ms-vscode.cpptools-extension-pack", "vscode-protobuf"],
     "settings": {
       "terminal.integrated.shell.linux": "/bin/bash"
     },
