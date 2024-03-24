@@ -1,7 +1,7 @@
 import zmq
 import time
 from google.protobuf import json_format
-from motion_control_pb2 import Request, JointTorqueGoal
+from motion_control_pb2 import Request, JointTorqueGoal, JointStates
 
 def main():
     while True:
@@ -18,7 +18,7 @@ def main():
 
         # Populate the JointTorqueGoal message
         joint_torque_goal = JointTorqueGoal()
-        joint_torque_goal.torque.extend([0.2, 0.2, 0.0, 0.0, 0.0, 0.0])  # Adjust the torque values as needed
+        joint_torque_goal.torque.extend([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])  # Adjust the torque values as needed
 
         # Set the JointTorqueGoal message in the Request
         request.set_joint_torque.CopyFrom(joint_torque_goal)
@@ -33,11 +33,11 @@ def main():
         response_bytes = socket.recv()
 
         # Optionally deserialize the response
-        #response = Response()
-        #response.ParseFromString(response_bytes)
+        response = JointStates()
+        response.ParseFromString(response_bytes)
 
         # Print the response (optional)
-        #print(response)
+        print(response)
 
     # Close the socket and context
     socket.close()

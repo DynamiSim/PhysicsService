@@ -231,29 +231,30 @@ int main(int argc, char* argv[])
         // Call the handleMessage lambda function with the received message
         handleRequest(request);
 
-		// Prepare a response message
-		// TODO: Delete
-		std::string response = "Dummy response";
-		zmq::message_t reply(response.size());
-		memcpy(reply.data(), response.data(), response.size());
-		socket.send(reply);
-		// ENDTODO
+		auto sendResponse = [&](){
+			// Prepare a response message
+			motion_control::JointStates joint_states;
 
-        // Prepare a response message
-        // Example: create an acknowledgment message
-    	//motion_control::Acknowledge acknowledge;
-        //acknowledge.set_acknowledge("Message received successfully");
+			// Populate joint states
+			for (int i = 0; i < model.nv; ++i) {
+				motion_control::JointState joint_state;
+				joint_state.set_axis_id(i+1);
+				joint_state.set_position(q[i]);
+				joint_state.set_velocity(v[i]);
+				joint_state.set_torque(tau[i]);
+				joint_states.add_states()->CopyFrom(joint_state);
+			}
 
-        // Serialize the response message
-        //std::string response = "Ok";
-        //acknowledge.SerializeToString(&response);
+			// Serialize the joint states message
+			std::string response;
+			joint_states.SerializeToString(&response);
 
-        // Send the response
-        //zmq::message_t reply(response.size());
-        //memcpy(reply.data(), response.data(), response.size());
-        //socket.send(reply);
-		
-
+			// Send the response
+			zmq::message_t reply(response.size());
+			memcpy(reply.data(), response.data(), response.size());
+			socket.send(reply);
+		};
+        
 		switch (simState) {
 			case STOPPED:
 				break;
@@ -288,6 +289,8 @@ int main(int argc, char* argv[])
         //std::clog<< "q: " << q.transpose() << "\tdt: " << dt <<std::endl;
 
         startTime = std::chrono::high_resolution_clock::now();
+
+		sendResponse();
 
 		// Broadcast the input to all connected clients (is sent on the network thread)
         Json::Value payload;
