@@ -16,11 +16,14 @@ RUN pip3 install websocket-client protobuf==3.20.* zmq
 RUN ln -s /usr/include/jsoncpp/json/ /usr/include/json
 
 # Copy repository to the container
-COPY . /workspaces/PhysicsService
-RUN chmod +x /workspaces/PhysicsService/scripts/install-pinocchio.sh
-RUN /workspaces/PhysicsService/scripts/install-pinocchio.sh
+COPY . /workspaces
+RUN chmod +x /workspaces/scripts/install-pinocchio.sh
+RUN /workspaces/scripts/install-pinocchio.sh
 
-RUN ls -R /workspaces/PhysicsService/PhysicsService
+RUN chown -R vscode /workspaces/PhysicsService
+
+# Switch back to non-root to install packages
+USER vscode
 
 # Expose the environment variables
 ENV PATH=/opt/openrobots/bin:$PATH
@@ -29,12 +32,5 @@ ENV LD_LIBRARY_PATH=/opt/openrobots/lib:$LD_LIBRARY_PATH
 ENV PYTHONPATH=/opt/openrobots/lib/python3.10/site-packages:$PYTHONPATH
 ENV CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
 
-# Build the physics service
-WORKDIR /workspaces/PhysicsService/PhysicsService/build
-RUN cmake ..
-RUN make
-
 EXPOSE 1234
 EXPOSE 5555
-
-ENTRYPOINT [ "./physics_service" ]
