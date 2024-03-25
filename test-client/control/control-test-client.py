@@ -37,7 +37,7 @@ def main():
         response.ParseFromString(response_bytes)
 
         # Print the response (optional)
-        print(response)
+        #print(response)
 
     # Close the socket and context
     socket.close()

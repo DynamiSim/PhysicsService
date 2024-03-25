@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'\252\002\016motion-control',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x14motion_control.proto\x12\x0emotion_control\"%\n\x11JointPositionGoal\x12\x10\n\x08position\x18\x01 \x03(\x01\"%\n\x11JointVelocityGoal\x12\x10\n\x08velocity\x18\x01 \x03(\x01\"!\n\x0fJointTorqueGoal\x12\x0e\n\x06torque\x18\x01 \x03(\x01\">\n\x19JointPositionGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08position\x18\x02 \x01(\x01\">\n\x19JointVelocityGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08velocity\x18\x02 \x01(\x01\":\n\x17JointTorqueGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x0e\n\x06torque\x18\x02 \x01(\x01\"\x13\n\x11JointStateRequest\",\n\x19JointStateRequestByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\"\'\n\x13GripperPositionGoal\x12\x10\n\x08position\x18\x01 \x01(\x01\"\x15\n\x13GripperStateRequest\"\x17\n\x15RobotParameterRequest\"\x86\t\n\x07Request\x12\x31\n\x04type\x18\x01 \x01(\x0e\x32#.motion_control.Request.MessageType\x12=\n\x12set_joint_position\x18\x02 \x01(\x0b\x32!.motion_control.JointPositionGoal\x12=\n\x12set_joint_velocity\x18\x03 \x01(\x0b\x32!.motion_control.JointVelocityGoal\x12\x39\n\x10set_joint_torque\x18\x04 \x01(\x0b\x32\x1f.motion_control.JointTorqueGoal\x12P\n\x1dset_joint_position_by_axis_id\x18\x05 \x01(\x0b\x32).motion_control.JointPositionGoalByAxisId\x12P\n\x1dset_joint_velocity_by_axis_id\x18\x06 \x01(\x0b\x32).motion_control.JointVelocityGoalByAxisId\x12L\n\x1bset_joint_torque_by_axis_id\x18\x07 \x01(\x0b\x32\'.motion_control.JointTorqueGoalByAxisId\x12:\n\x0fget_joint_state\x18\x08 \x01(\x0b\x32!.motion_control.JointStateRequest\x12M\n\x1aget_joint_state_by_axis_id\x18\t \x01(\x0b\x32).motion_control.JointStateRequestByAxisId\x12\x41\n\x14set_gripper_position\x18\n \x01(\x0b\x32#.motion_control.GripperPositionGoal\x12>\n\x11get_gripper_state\x18\x0b \x01(\x0b\x32#.motion_control.GripperStateRequest\x12\x42\n\x13robot_parameter_get\x18\x0c \x01(\x0b\x32%.motion_control.RobotParameterRequest\"\xca\x02\n\x0bMessageType\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x16\n\x12SET_JOINT_POSITION\x10\x01\x12\x16\n\x12SET_JOINT_VELOCITY\x10\x02\x12\x14\n\x10SET_JOINT_TORQUE\x10\x03\x12!\n\x1dSET_JOINT_POSITION_BY_AXIS_ID\x10\x04\x12!\n\x1dSET_JOINT_VELOCITY_BY_AXIS_ID\x10\x05\x12\x1f\n\x1bSET_JOINT_TORQUE_BY_AXIS_ID\x10\x06\x12\x13\n\x0fGET_JOINT_STATE\x10\x07\x12\x1e\n\x1aGET_JOINT_STATE_BY_AXIS_ID\x10\x08\x12\x18\n\x14SET_GRIPPER_POSITION\x10\t\x12\x15\n\x11GET_GRIPPER_STATE\x10\n\x12\x17\n\x13GET_ROBOT_PARAMETER\x10\x0b\">\n\x12JointPositionLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\">\n\x12JointVelocityLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\"<\n\x10JointEffortLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\"\xbc\x02\n\nJointLimit\x12\x32\n\x04type\x18\x01 \x01(\x0e\x32$.motion_control.JointLimit.JointType\x12:\n\x0eposition_limit\x18\x02 \x01(\x0b\x32\".motion_control.JointPositionLimit\x12:\n\x0evelocity_limit\x18\x03 \x01(\x0b\x32\".motion_control.JointVelocityLimit\x12\x36\n\x0c\x65\x66\x66ort_limit\x18\x04 \x01(\x0b\x32 .motion_control.JointEffortLimit\"J\n\tJointType\x12\x1a\n\x16JOINT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n\nROTATIONAL\x10\x01\x12\x11\n\rTRANSLATIONAL\x10\x02\"V\n\x0eRobotParameter\x12\x13\n\x0b\x61xes_number\x18\x01 \x01(\x05\x12/\n\x0bjoint_limit\x18\x02 \x03(\x0b\x32\x1a.motion_control.JointLimit\"Q\n\nJointState\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08position\x18\x02 \x01(\x01\x12\x10\n\x08velocity\x18\x03 \x01(\x01\x12\x0e\n\x06torque\x18\x04 \x01(\x01\"9\n\x0bJointStates\x12*\n\x06states\x18\x01 \x03(\x0b\x32\x1a.motion_control.JointState\" \n\x0cGripperState\x12\x10\n\x08position\x18\x01 \x01(\x01\"\"\n\x0b\x41\x63knowledge\x12\x13\n\x0b\x61\x63knowledge\x18\x01 \x01(\tB\x11\xaa\x02\x0emotion-controlb\x06proto3'
+  serialized_pb=b'\n\x14motion_control.proto\x12\x0emotion_control\"%\n\x11JointPositionGoal\x12\x10\n\x08position\x18\x01 \x03(\x01\"%\n\x11JointVelocityGoal\x12\x10\n\x08velocity\x18\x01 \x03(\x01\"!\n\x0fJointTorqueGoal\x12\x0e\n\x06torque\x18\x01 \x03(\x01\">\n\x19JointPositionGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08position\x18\x02 \x01(\x01\">\n\x19JointVelocityGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08velocity\x18\x02 \x01(\x01\":\n\x17JointTorqueGoalByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x0e\n\x06torque\x18\x02 \x01(\x01\"\x13\n\x11JointStateRequest\",\n\x19JointStateRequestByAxisId\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\"\'\n\x13GripperPositionGoal\x12\x10\n\x08position\x18\x01 \x01(\x01\"\x15\n\x13GripperStateRequest\"\x17\n\x15RobotParameterRequest\"\x86\t\n\x07Request\x12\x31\n\x04type\x18\x01 \x01(\x0e\x32#.motion_control.Request.MessageType\x12=\n\x12set_joint_position\x18\x02 \x01(\x0b\x32!.motion_control.JointPositionGoal\x12=\n\x12set_joint_velocity\x18\x03 \x01(\x0b\x32!.motion_control.JointVelocityGoal\x12\x39\n\x10set_joint_torque\x18\x04 \x01(\x0b\x32\x1f.motion_control.JointTorqueGoal\x12P\n\x1dset_joint_position_by_axis_id\x18\x05 \x01(\x0b\x32).motion_control.JointPositionGoalByAxisId\x12P\n\x1dset_joint_velocity_by_axis_id\x18\x06 \x01(\x0b\x32).motion_control.JointVelocityGoalByAxisId\x12L\n\x1bset_joint_torque_by_axis_id\x18\x07 \x01(\x0b\x32\'.motion_control.JointTorqueGoalByAxisId\x12:\n\x0fget_joint_state\x18\x08 \x01(\x0b\x32!.motion_control.JointStateRequest\x12M\n\x1aget_joint_state_by_axis_id\x18\t \x01(\x0b\x32).motion_control.JointStateRequestByAxisId\x12\x41\n\x14set_gripper_position\x18\n \x01(\x0b\x32#.motion_control.GripperPositionGoal\x12>\n\x11get_gripper_state\x18\x0b \x01(\x0b\x32#.motion_control.GripperStateRequest\x12\x42\n\x13robot_parameter_get\x18\x0c \x01(\x0b\x32%.motion_control.RobotParameterRequest\"\xca\x02\n\x0bMessageType\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x16\n\x12SET_JOINT_POSITION\x10\x01\x12\x16\n\x12SET_JOINT_VELOCITY\x10\x02\x12\x14\n\x10SET_JOINT_TORQUE\x10\x03\x12!\n\x1dSET_JOINT_POSITION_BY_AXIS_ID\x10\x04\x12!\n\x1dSET_JOINT_VELOCITY_BY_AXIS_ID\x10\x05\x12\x1f\n\x1bSET_JOINT_TORQUE_BY_AXIS_ID\x10\x06\x12\x13\n\x0fGET_JOINT_STATE\x10\x07\x12\x1e\n\x1aGET_JOINT_STATE_BY_AXIS_ID\x10\x08\x12\x18\n\x14SET_GRIPPER_POSITION\x10\t\x12\x15\n\x11GET_GRIPPER_STATE\x10\n\x12\x17\n\x13GET_ROBOT_PARAMETER\x10\x0b\">\n\x12JointPositionLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\">\n\x12JointVelocityLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\"<\n\x10JointEffortLimit\x12\x13\n\x0bupper_limit\x18\x01 \x01(\x01\x12\x13\n\x0blower_limit\x18\x02 \x01(\x01\"\xbc\x02\n\nJointLimit\x12\x32\n\x04type\x18\x01 \x01(\x0e\x32$.motion_control.JointLimit.JointType\x12:\n\x0eposition_limit\x18\x02 \x01(\x0b\x32\".motion_control.JointPositionLimit\x12:\n\x0evelocity_limit\x18\x03 \x01(\x0b\x32\".motion_control.JointVelocityLimit\x12\x36\n\x0c\x65\x66\x66ort_limit\x18\x04 \x01(\x0b\x32 .motion_control.JointEffortLimit\"J\n\tJointType\x12\x1a\n\x16JOINT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n\nROTATIONAL\x10\x01\x12\x11\n\rTRANSLATIONAL\x10\x02\"V\n\x0eRobotParameter\x12\x13\n\x0b\x61xes_number\x18\x01 \x01(\x05\x12/\n\x0bjoint_limit\x18\x02 \x03(\x0b\x32\x1a.motion_control.JointLimit\"g\n\nJointState\x12\x0f\n\x07\x61xis_id\x18\x01 \x01(\x05\x12\x10\n\x08position\x18\x02 \x01(\x01\x12\x10\n\x08velocity\x18\x03 \x01(\x01\x12\x14\n\x0c\x61\x63\x63\x65leration\x18\x04 \x01(\x01\x12\x0e\n\x06torque\x18\x05 \x01(\x01\"9\n\x0bJointStates\x12*\n\x06states\x18\x01 \x03(\x0b\x32\x1a.motion_control.JointState\" \n\x0cGripperState\x12\x10\n\x08position\x18\x01 \x01(\x01\"\"\n\x0b\x41\x63knowledge\x12\x13\n\x0b\x61\x63knowledge\x18\x01 \x01(\tB\x11\xaa\x02\x0emotion-controlb\x06proto3'
 )
 
 
@@ -832,8 +832,15 @@ _JOINTSTATE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='torque', full_name='motion_control.JointState.torque', index=3,
+      name='acceleration', full_name='motion_control.JointState.acceleration', index=3,
       number=4, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='torque', full_name='motion_control.JointState.torque', index=4,
+      number=5, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -851,7 +858,7 @@ _JOINTSTATE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=2255,
-  serialized_end=2336,
+  serialized_end=2358,
 )
 
 
@@ -882,8 +889,8 @@ _JOINTSTATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2338,
-  serialized_end=2395,
+  serialized_start=2360,
+  serialized_end=2417,
 )
 
 
@@ -914,8 +921,8 @@ _GRIPPERSTATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2397,
-  serialized_end=2429,
+  serialized_start=2419,
+  serialized_end=2451,
 )
 
 
@@ -946,8 +953,8 @@ _ACKNOWLEDGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2431,
-  serialized_end=2465,
+  serialized_start=2453,
+  serialized_end=2487,
 )
 
 _REQUEST.fields_by_name['type'].enum_type = _REQUEST_MESSAGETYPE

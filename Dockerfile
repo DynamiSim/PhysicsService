@@ -31,6 +31,7 @@ ENV CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
 
 # Build the physics service
 WORKDIR /workspaces/PhysicsService/PhysicsService/build
+RUN rm -r /workspaces/PhysicsService/PhysicsService/build/*
 RUN cmake ..
 RUN make
 

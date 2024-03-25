@@ -212,10 +212,12 @@ message JointState {
   int32 axis_id = 1;
   // The joint position data [rad]
   double position = 2;
-  // the joint velocity data [rad/s]
+  // The joint velocity data [rad/s]
   double velocity = 3;
+  // The joint acceleration data [rad/s^2]
+  double acceleration = 4;
   // The joint torque data [Nm]
-  double torque = 4;
+  double torque = 5;
 }
 
 // The joint state msg NOTE: might be easier to use repeated doubles for
